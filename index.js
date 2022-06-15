@@ -269,6 +269,75 @@ app.delete("/delete_hospital", (req, rest) => {
   );
 });
 
+app.post("/add_bloodbank", (req, res) => {
+  const { name, address, phone, email, description } = req.body;
+  connection.query(
+    "INSERT INTO blood_banks (b_name,b_email,b_phone,b_add,b_desc,dat) VALUES (?,?,?,?,?,?)",
+    [
+      name,
+      email,
+      phone,
+      address,
+      description,
+      moment().format("YYYY/MM/DD HH:mm:ss"),
+    ],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({
+          status: 500,
+          message: "Internal Server Error",
+        });
+      } else {
+        res.send({
+          status: 200,
+          message: "Bloodbank Registered Successfully",
+        });
+      }
+    }
+  );
+});
+
+app.delete("/delete_bloodbank", (req, rest) => {
+  const { id } = req.query;
+  connection.query(
+    "DELETE FROM blood_banks WHERE id = ?",
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        rest.send({
+          status: 500,
+          message: "Internal Server Error",
+        });
+      } else {
+        rest.send({
+          status: 200,
+          message: "Bloodbank Deleted Successfully",
+        });
+      }
+    }
+  );
+});
+
+app.get("/get_all_users", (req, res) => {
+  connection.query("SELECT * FROM users WHERE  role_id != 1", (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({
+        status: 500,
+        message: "Internal Server Error",
+      });
+    } else {
+      res.send({
+        status: 200,
+        message: "Fetched Users Successfully",
+        data: result,
+      });
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
